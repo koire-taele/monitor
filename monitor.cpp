@@ -48,12 +48,11 @@ public:
             if (current_event.has_value())
             {
                 EventData event = current_event.value(); 
-                current_event.reset(); //
+                current_event.reset();
                 lock.unlock(); // записали данные к себе локально и отпускаем общую переменную
                 std::cout << "Consumer had received event with ID = " << event.id << "." << std::endl;
                 std::cout << "Data processing: " << event.data << std::endl;
                 processed_count++;
-                continue;
             }
             if (producer_finished)
             {
