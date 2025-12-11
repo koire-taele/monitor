@@ -12,19 +12,17 @@ private:
     {
         int id;
         std::string data;
-    };
-    
+    };   
     std::mutex mtx;
     std::condition_variable cv;
-    std::optional<EventData> current_event; // через отсутствие данных в пакете определяем отсутствие события. Не знаю, хорошо ли так делать, но пока что так.
+    std::optional<EventData> current_event; // через отсутствие данных в пакете определяем отсутствие события
     bool producer_finished = false;
-
 public:
     void producer(int events_count)
     {
         for (int i = 0; i < events_count; i++)
         {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::seconds(1)); // сначала пауза, затем лок мьютекса, чтобы не держать его залоченным просто так
             std::lock_guard<std::mutex> lock(mtx);
             current_event = EventData{i, "Event with ID: " + std::to_string(i)};
             std::cout << "Producer has sent event with ID = " << i << "." << std::endl; 
@@ -49,9 +47,9 @@ public:
 
             if (current_event.has_value())
             {
-                EventData event = current_event.value();
-                current_event.reset();
-                lock.unlock();
+                EventData event = current_event.value(); 
+                current_event.reset(); //
+                lock.unlock(); // записали данные к себе локально и отпускаем общую переменную
                 std::cout << "Consumer had received event with ID = " << event.id << "." << std::endl;
                 std::cout << "Data processing: " << event.data << std::endl;
                 processed_count++;
