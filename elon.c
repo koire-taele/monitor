@@ -9,14 +9,13 @@
 #include <linux/timekeeping.h>
 #define procfs_name "tsu"
 static struct proc_dir_entry *our_proc_file = NULL;
-static time64_t launch_seconds;
 static const time64_t MARS_FLIGHT_SECONDS = 258 * 24 * 3600; // 258 дней
 
 static ssize_t procfile_read(struct file *file_pointer, char __user *buffer, size_t buffer_length, loff_t* offset)
 {
     struct timespec64 ts;
     ktime_get_real_ts64(&ts);
-    launch_seconds = ts.tv_sec;
+    time64_t launch_seconds = ts.tv_sec;
     char s[256];
     int len;
     ssize_t return_value;
@@ -80,5 +79,4 @@ module_exit(procfs1_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Mars arrival time calculator - 258 days constant");
-
 MODULE_AUTHOR("G. Alemasov");
